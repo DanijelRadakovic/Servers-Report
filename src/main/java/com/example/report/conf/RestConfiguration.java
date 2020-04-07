@@ -21,6 +21,12 @@ public class RestConfiguration {
     private static final String URL_FORMAT = "%s://%s:%s";
 
     /**
+     * TLS version.
+     */
+    @Value("${server.ssl.algorithm}")
+    private String algorithm;
+
+    /**
      * Application keystore path.
      */
     @Value("${server.ssl.key-store}")
@@ -93,12 +99,13 @@ public class RestConfiguration {
             KeyStore trustStore = KeyStore.getInstance(truststoreType);
             trustStore.load(new FileInputStream(new File(truststore)), truststorePassword.toCharArray());
 
-            SSLContext sslcontext = SSLContexts.custom().loadTrustMaterial(trustStore, null)
+            SSLContext sslcontext = SSLContexts.custom()
+                    .loadTrustMaterial(trustStore, null)
                     .loadKeyMaterial(keyStore, keystorePassword.toCharArray(), (aliases, socket) -> alias)
                     .build();
 
             SSLConnectionSocketFactory sslFactory = new SSLConnectionSocketFactory(sslcontext,
-                    new String[]{"TLSv1.2"},
+                    new String[]{algorithm},
                     null, (hostname, sslSession) -> true);
 
             return HttpClients.custom().setSSLSocketFactory(sslFactory).build();
