@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.TimeoutException;
 
 @RestController
 @RequestMapping(EndpointConfiguration.REPORT_BASE_URL)
@@ -46,7 +48,7 @@ public class ReportController {
     }
 
     @GetMapping
-    public ResponseEntity<ReportDTO> getAll() throws URISyntaxException {
+    public ResponseEntity<ReportDTO> getAll() throws URISyntaxException, IOException, TimeoutException {
         String logContent = String.format(LOG_GET, DEFAULT_USER);
         LOGGER.info(logContent);
         logProducer.send(new Log(SERVICE_NAME, logContent));
